@@ -1,12 +1,14 @@
 CC = gcc
-flag = -lreadline
+flag = -lreadline -w -fno-stack-protector
 build = build/
-NAME = georbeh
+name = georbeh
 ALL: build run
 build: clean
 	mkdir $(build)
-	$(CC) src/main.c -o build/$(NAME) $(flag)
+	$(CC) src/main.c -o $(build)$(name) $(flag)
 clean:
 	rm -rdf $(build)
 run:
-	./$(build)/$(NAME)
+	./$(build)$(name)
+install: build
+	sudo cp -r ./$(build)$(name) /usr/bin/georbeh

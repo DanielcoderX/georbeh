@@ -6,36 +6,32 @@
 #include<sys/wait.h>
 #include<readline/readline.h>
 #include<readline/history.h>
-  
+#include<signal.h>
+
 #define MAXCOM 1000 // max number of letters to be supported
 #define MAXLIST 100 // max number of commands to be supported
   
 // Clearing the shell using escape sequences
 #define clear() printf("\033[H\033[J")
-  
-// Greeting shell during startup
-void init_shell()
+// User Name
+#define username  getenv("USER")
+// Ctrl + C support
+#define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); \
+                               } while (0)
+static void CtrlC_Handler(int sig)
 {
-    clear();
-    printf("\n\n\n\n******************"
-        "************************");
-    printf("\n\n\n\t****MY SHELL****");
-    printf("\n\n\t-USE AT YOUR OWN RISK-");
-    printf("\n\n\n\n*******************"
-        "***********************");
-    char* username = getenv("USER");
-    printf("\n\n\nUSER is: @%s", username);
-    printf("\n");
-    sleep(1);
-    clear();
+    return 1;
 }
-
+static void CtrlD_Handler(int sig)
+{
+    return exit(EXIT_SUCCESS);
+}
 // Function to print Current Directory.
 void printDir()
 {
     char cwd[1024];
     getcwd(cwd, sizeof(cwd));
-    printf("\nDir: %s", cwd);
+    printf("\n\uF17C %s", cwd);
 }
 
 // Function to take input
@@ -43,7 +39,7 @@ int takeInput(char* str)
 {
     char* buf;
   
-    buf = readline("\n>>> ");
+    buf = readline("\n$ ");
     if (strlen(buf) != 0) {
         add_history(buf);
         strcpy(str, buf);
@@ -52,7 +48,6 @@ int takeInput(char* str)
         return 1;
     }
 }
-  
 // Function where the system command is executed
 void execArgs(char** parsed)
 {
@@ -128,29 +123,20 @@ void execArgsPiped(char** parsed, char** parsedpipe)
         }
     }
 }
-  
+
 // Help command builtin
 void openHelp()
 {
-    puts("\n***WELCOME TO MY SHELL HELP***"
-        "\n-Use the shell at your own risk..."
-        "\nList of Commands supported:"
-        "\n>cd"
-        "\n>ls"
-        "\n>exit"
-        "\n>all other general commands available in UNIX shell"
-        "\n>pipe handling"
-        "\n>improper space handling");
-  
+    puts("\n A few integrated terminal"
+         "\n Unix and Linux commands\n");
     return;
 }
-  
+
 // Function to execute builtin commands
 int ownCmdHandler(char** parsed)
 {
     int NoOfOwnCmds = 4, i, switchOwnArg = 0;
     char* ListOfOwnCmds[NoOfOwnCmds];
-    char* username;
   
     ListOfOwnCmds[0] = "exit";
     ListOfOwnCmds[1] = "cd";
@@ -166,7 +152,7 @@ int ownCmdHandler(char** parsed)
   
     switch (switchOwnArg) {
     case 1:
-        printf("\nGoodbye\n");
+        printf("\nexit\n");
         exit(0);
     case 2:
         chdir(parsed[1]);
@@ -175,7 +161,6 @@ int ownCmdHandler(char** parsed)
         openHelp();
         return 1;
     case 4:
-        username = getenv("USER");
         printf("\nHello %s.\nMind that this is "
             "not a place to play around."
             "\nUse help to know more..\n",
@@ -248,22 +233,20 @@ int main()
     char inputString[MAXCOM], *parsedArgs[MAXLIST];
     char* parsedArgsPiped[MAXLIST];
     int execFlag = 0;
-    init_shell();
   
     while (1) {
         // print shell line
         printDir();
         // take input
+        if (signal(SIGINT, CtrlC_Handler) == SIG_ERR)
+            errExit("signal SIGINT");
+        if(signal(SIGSEGV,CtrlD_Handler) == SIG_ERR)
+            errExit("singal SIGSEGV");
         if (takeInput(inputString))
             continue;
         // process
         execFlag = processString(inputString,
         parsedArgs, parsedArgsPiped);
-        // execflag returns zero if there is no command
-        // or it is a builtin command,
-        // 1 if it is a simple command
-        // 2 if it is including a pipe.
-  
         // execute
         if (execFlag == 1)
             execArgs(parsedArgs);
