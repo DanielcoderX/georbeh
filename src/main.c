@@ -20,7 +20,7 @@
                                } while (0)
 static void CtrlC_Handler(int sig)
 {
-    return 1;
+    return sig;
 }
 static void CtrlD_Handler(int sig)
 {
@@ -59,7 +59,7 @@ void execArgs(char** parsed)
         return;
     } else if (pid == 0) {
         if (execvp(parsed[0], parsed) < 0) {
-            printf("\nCould not execute command..");
+            printf("%s: command not found",parsed[0]);
         }
         exit(0);
     } else {
@@ -94,7 +94,7 @@ void execArgsPiped(char** parsed, char** parsedpipe)
         close(pipefd[1]);
   
         if (execvp(parsed[0], parsed) < 0) {
-            printf("\nCould not execute command 1..");
+            printf("%s: command not found",parsed[0]);
             exit(0);
         }
     } else {
@@ -113,7 +113,7 @@ void execArgsPiped(char** parsed, char** parsedpipe)
             dup2(pipefd[0], STDIN_FILENO);
             close(pipefd[0]);
             if (execvp(parsedpipe[0], parsedpipe) < 0) {
-                printf("\nCould not execute command 2..");
+                printf("%s: command not found",parsedpipe[0]);
                 exit(0);
             }
         } else {
