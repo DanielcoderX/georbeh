@@ -1,8 +1,11 @@
 # Georbeh a UNIX shell
+
 Maybe droll...
+
 But this shell is inspired of a cat lover :)
+
 -----
-# TODO
+# TODO's
 
 - [X] Handling Signals
 - [X] EOF Controlling(ctrl +d)
@@ -12,6 +15,9 @@ But this shell is inspired of a cat lover :)
 - [ ] Enviorment And Path Supports
 - [ ] Some Unix Commands Support
 - [ ] Set "~" as Home Env 
+- [ ] If Else Statment
+- [ ] Loop supports
+- [ ] Functions support
 - [ ] Auto Complete
 
 
