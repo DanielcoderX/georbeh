@@ -19,7 +19,7 @@ But this shell is inspired of a cat lover :)
 - [ ] Loop supports
 - [ ] Functions support
 - [ ] Auto Complete
-
+- [ ] Setup github Page 
 
 ## Required Tools:
      gcc 
