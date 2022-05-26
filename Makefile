@@ -1,11 +1,12 @@
 CC = gcc
 flag = -lreadline -w -fno-stack-protector
 build = build/
+src = src/
 name = georbeh
 ALL: build run
 build: clean
 	mkdir $(build)
-	$(CC) src/main.c -o $(build)$(name) $(flag)
+	$(CC) $(src)main.c $(src)signal.c -o $(build)$(name) $(flag)
 clean:
 	rm -rdf $(build)
 run:

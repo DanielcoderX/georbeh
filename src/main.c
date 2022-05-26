@@ -1,54 +1,32 @@
-#include<stdio.h>
-#include<string.h>
-#include<stdlib.h>
-#include<unistd.h>
-#include<sys/types.h>
-#include<sys/wait.h>
-#include<readline/readline.h>
-#include<readline/history.h>
-#include<signal.h>
+#include    <stdio.h>
+#include    <string.h>
+#include    <unistd.h>
+#include    <sys/wait.h>
+#include    <readline/readline.h>
+#include    <readline/history.h>
+#include    "define.h"
+#include    "signal.h"
 
-#define MAXCOM 1000 // max number of letters to be supported
-#define MAXLIST 100 // max number of commands to be supported
-  
-// Clearing the shell using escape sequences
-#define clear() printf("\033[H\033[J")
-// User Name
-#define username  getenv("USER")
-// Ctrl + C support
-#define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); \
-                               } while (0)
-static void CtrlC_Handler(int sig)
-{
-    return sig;
-}
-static void CtrlD_Handler(int sig)
-{
-    return exit(EXIT_SUCCESS);
-}
-// Function to print Current Directory.
-void printDir()
-{
-    char cwd[1024];
-    getcwd(cwd, sizeof(cwd));
-    printf("\n\uF17C %s", cwd);
-}
-
-// Function to take input
 int takeInput(char* str)
 {
     char* buf;
-  
-    buf = readline("\n$ ");
-    if (strlen(buf) != 0) {
-        add_history(buf);
-        strcpy(str, buf);
-        return 0;
-    } else {
-        return 1;
+    char cwd[1024];
+    getcwd(cwd, sizeof(cwd));
+    printf("[%s]",cwd);
+    buf = readline("$ ");
+    if(buf == 0x0){
+	printf("\n");
+	eof_handler();
+    }else{
+    	if (strlen(buf) != 0) {
+        	add_history(buf);
+        	strcpy(str, buf);
+        	return 0;
+    	} else {
+        	return 1;
+    	}
     }
 }
-// Function where the system command is executed
 void execArgs(char** parsed)
 {
     // Forking a child
@@ -59,17 +37,15 @@ void execArgs(char** parsed)
         return;
     } else if (pid == 0) {
         if (execvp(parsed[0], parsed) < 0) {
-            printf("%s: command not found",parsed[0]);
+            printf("%s: command not found\n",parsed[0]);
         }
-        exit(0);
+        exit(127);
     } else {
         // waiting for child to terminate
         wait(NULL); 
         return;
     }
 }
-  
-// Function where the piped system commands is executed
 void execArgsPiped(char** parsed, char** parsedpipe)
 {
     // 0 is read end, 1 is write end
@@ -123,16 +99,12 @@ void execArgsPiped(char** parsed, char** parsedpipe)
         }
     }
 }
-
-// Help command builtin
 void openHelp()
 {
     puts("\n A few integrated terminal"
          "\n Unix and Linux commands\n");
     return;
 }
-
-// Function to execute builtin commands
 int ownCmdHandler(char** parsed)
 {
     int NoOfOwnCmds = 4, i, switchOwnArg = 0;
@@ -172,8 +144,6 @@ int ownCmdHandler(char** parsed)
   
     return 0;
 }
-  
-// function for finding pipe
 int parsePipe(char* str, char** strpiped)
 {
     int i;
@@ -189,8 +159,6 @@ int parsePipe(char* str, char** strpiped)
         return 1;
     }
 }
-  
-// function for parsing command words
 void parseSpace(char* str, char** parsed)
 {
     int i;
@@ -235,24 +203,16 @@ int main()
     int execFlag = 0;
   
     while (1) {
-        // print shell line
-        printDir();
-        // take input
-        if (signal(SIGINT, CtrlC_Handler) == SIG_ERR)
-            errExit("signal SIGINT");
-        if(signal(SIGSEGV,CtrlD_Handler) == SIG_ERR)
-            errExit("singal SIGSEGV");
-        if (takeInput(inputString))
-            continue;
+        // Controller
+        signal_controller(signal_handler);
+	takeInput(inputString);
         // process
-        execFlag = processString(inputString,
-        parsedArgs, parsedArgsPiped);
+        execFlag = processString(inputString,parsedArgs, parsedArgsPiped);
         // execute
         if (execFlag == 1)
             execArgs(parsedArgs);
-  
         if (execFlag == 2)
             execArgsPiped(parsedArgs, parsedArgsPiped);
     }
-    return 0;
+    exit(0);
 }
