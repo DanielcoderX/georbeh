@@ -101,7 +101,7 @@ void execArgsPiped(char** parsed, char** parsedpipe)
 }
 void openHelp()
 {
-    puts("\n A few integrated terminal"
+    puts("\n A few integrated terminal commands"
          "\n Unix and Linux commands\n");
     return;
 }
@@ -127,8 +127,18 @@ int ownCmdHandler(char** parsed)
         printf("\nexit\n");
         exit(0);
     case 2:
-        chdir(parsed[1]);
-        return 1;
+    //TODO FIX null
+        if(parsed[1] == "~"  || parsed[1] == "" || parsed[1] == ){
+            chdir(getenv("HOME"));
+            return 1;
+	    }else{
+            int ch_stat = chdir(parsed[1]);
+            if(ch_stat) {
+                printf("%s: No such file or directory found\n",parsed[1]);
+                return 1;
+            }
+            return 1;
+	    }
     case 3:
         openHelp();
         return 1;

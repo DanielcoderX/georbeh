@@ -12,4 +12,5 @@ clean:
 run:
 	./$(build)$(name)
 install: build
-	sudo cp -r ./$(build)$(name) /usr/bin/georbeh
+	sudo cp -r ./$(build)$(name) /usr/bin/$(name)
+	sudo chmod +x /usr/bin/$(name)

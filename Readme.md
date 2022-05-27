@@ -1,9 +1,6 @@
 # Georbeh a UNIX shell
-
-Maybe droll...
-
-But this shell is inspired of a cat lover :)
-
+Inspired of a cat lover :)
+Like dash faster than bash :))
 -----
 # TODO's
 
