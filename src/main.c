@@ -13,7 +13,7 @@ int takeInput(char* str)
     char cwd [1024];
     char cwd2 [1024];
     getcwd(cwd, sizeof(cwd));
-    sprintf(cwd2,"[%s]$",cwd);
+    sprintf(cwd2,"[%s]$ ",cwd);
     const char *readprompt = ('%s',cwd2);
     buf = readline(readprompt);
     if(buf == 0x0){
