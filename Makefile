@@ -6,7 +6,7 @@ name = georbeh
 ALL: build run
 build: clean
 	mkdir $(build)
-	$(CC) $(src)main.c $(src)signal.c -o $(build)$(name) $(flag)
+	$(CC) $(src)*.c -o $(build)$(name) $(flag)
 clean:
 	rm -rdf $(build)
 run:

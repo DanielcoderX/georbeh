@@ -10,22 +10,25 @@
 int takeInput(char* str)
 {
     char* buf;
-    char cwd[1024];
+    char cwd [1024];
+    char cwd2 [1024];
     getcwd(cwd, sizeof(cwd));
-    printf("[%s]",cwd);
-    buf = readline("$ ");
+    sprintf(cwd2,"[%s]$",cwd);
+    const char *readprompt = ('%s',cwd2);
+    buf = readline(readprompt);
     if(buf == 0x0){
-	printf("\n");
-	eof_handler();
+	    printf("\n");
+	    eof_handler();
     }else{
     	if (strlen(buf) != 0) {
         	add_history(buf);
         	strcpy(str, buf);
-        	return 0;
+		    return 0;
     	} else {
         	return 1;
     	}
     }
+    free(cwd);
 }
 void execArgs(char** parsed)
 {
@@ -128,8 +131,8 @@ int ownCmdHandler(char** parsed)
         exit(0);
     case 2:
     //TODO FIX null
-        if(parsed[1] == "~"  || parsed[1] == "" || parsed[1] == ){
-            chdir(getenv("HOME"));
+        if(parsed[1] == null || strchr(parsed[1], "~")){
+            chdir(home);
             return 1;
 	    }else{
             int ch_stat = chdir(parsed[1]);
