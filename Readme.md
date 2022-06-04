@@ -12,7 +12,7 @@ Like dash faster than bash :))
 - [ ] Creating .georbehrc And .georbeh_history
 - [ ] Enviorment And Path Supports
 - [ ] Some Unix Commands Support
-- [ ] Set "~" as Home Env 
+- [X] Set "~" as Home Env 
 - [ ] If Else Statment
 - [ ] Loop supports
 - [ ] Functions support

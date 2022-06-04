@@ -104,7 +104,7 @@ void execArgsPiped(char** parsed, char** parsedpipe)
 }
 void openHelp()
 {
-    puts("\n A few integrated terminal commands"
+    puts("\n Unix Shell with a few integrated terminal commands"
          "\n Unix and Linux commands\n");
     return;
 }
@@ -112,7 +112,6 @@ int ownCmdHandler(char** parsed)
 {
     int NoOfOwnCmds = 4, i, switchOwnArg = 0;
     char* ListOfOwnCmds[NoOfOwnCmds];
-  
     ListOfOwnCmds[0] = "exit";
     ListOfOwnCmds[1] = "cd";
     ListOfOwnCmds[2] = "help";
@@ -124,31 +123,36 @@ int ownCmdHandler(char** parsed)
             break;
         }
     }
-  
+    char string[250];
+    char* p = &string[0]; 
     switch (switchOwnArg) {
     case 1:
-        printf("\nexit\n");
+        printf("exit\n");
         exit(0);
     case 2:
-    //TODO FIX null
-        if(parsed[1] == null || strchr(parsed[1], "~")){
-            chdir(home);
-            return 1;
-	    }else{
+        snprintf(string,sizeof(parsed[1]),"%s",parsed[1]);
+        if(parsed[1] != null){
+            if(strcmp(p,"~") == 0 | parsed[1] == null){
+                chdir(home);
+                return 1;
+	        }
             int ch_stat = chdir(parsed[1]);
             if(ch_stat) {
                 printf("%s: No such file or directory found\n",parsed[1]);
                 return 1;
             }
             return 1;
-	    }
+        }else{
+            chdir(home);
+            return 1;
+        }
     case 3:
         openHelp();
         return 1;
     case 4:
-        printf("\nHello %s.\nMind that this is "
+        printf("\n Hello %s.\n Mind that this is "
             "not a place to play around."
-            "\nUse help to know more..\n",
+            "\n Use help to know more..\n",
             username);
         return 1;
     default:
@@ -218,7 +222,7 @@ int main()
     while (1) {
         // Controller
         signal_controller(signal_handler);
-	takeInput(inputString);
+	    takeInput(inputString);
         // process
         execFlag = processString(inputString,parsedArgs, parsedArgsPiped);
         // execute
